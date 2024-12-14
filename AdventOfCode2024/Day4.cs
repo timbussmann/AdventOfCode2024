@@ -12,8 +12,8 @@ public class Day4
 
         var horizontalLines = characters.Select(lineCharacters => string.Concat(lineCharacters));
         var verticalLines = Enumerable.Range(0, characters[0].Length).Select(columnIndex => string.Concat(characters.Select(line => line[columnIndex])));
-        var positiveDiagonalLines = GetPositiveDiagnonalLines(characters);
-        var negativeDiagnonalLines = GetNegativeDiagnonalLines(characters);
+        var positiveDiagonalLines = GetDiagnonalLines(characters, 0, x => ++x);
+        var negativeDiagnonalLines = GetDiagnonalLines(characters, characters[0].Length - 1, x => --x);
 
         string[] allLines = [..horizontalLines, ..verticalLines, .. positiveDiagonalLines, ..negativeDiagnonalLines];
         var result = allLines.Select(line => Regex.Matches(line, "XMAS").Count + Regex.Matches(line, "SAMX").Count).Sum();
@@ -22,11 +22,12 @@ public class Day4
         Assert.That(result, Is.EqualTo(expectedResult));
     }
 
-    static List<string> GetNegativeDiagnonalLines(char[][] characters)
+    static IEnumerable<string> GetDiagnonalLines(char[][] characters, int verticalLineIndex, Func<int, int> diagnonalDirection)
     {
-        (int StartY, int StartX)[] startPos = Enumerable.Range(0, characters.Length).Select(rowIndex => (rowIndex, characters[0].Length - 1))
-            .Concat(Enumerable.Range(0, characters[0].Length - 1).Select(columnIndex => (0, columnIndex))).ToArray();
-        List<string> negativeDiagnonalLines = new();
+        (int StartY, int StartX)[] startPos = Enumerable.Range(0, characters.Length).Select(rowIndex => (rowIndex, verticalLineIndex))
+            .Concat(Enumerable.Range(0, characters[0].Length).Select(columnIndex => (0, columnIndex)))
+            .Distinct() // filter out the one duplicate because it's simpler to read than adjusting the horizontal start positions by 1
+            .ToArray();
 
         foreach (var pos in startPos)
         {
@@ -36,35 +37,11 @@ public class Day4
             do
             {
                 lineChars.Add(characters[currentY][currentX]);
-                currentX--;
+                currentX = diagnonalDirection(currentX);
                 currentY++;
-            } while (currentX >= 0 && currentY < characters.Length);
-            negativeDiagnonalLines.Add(string.Concat(lineChars));
+            } while (currentX >= 0 && currentX < characters[0].Length && currentY < characters.Length);
+
+            yield return string.Concat(lineChars);
         }
-
-        return negativeDiagnonalLines;
-    }
-
-    static List<string> GetPositiveDiagnonalLines(char[][] characters)
-    {
-        (int StartY, int StartX)[] startPos = Enumerable.Range(0, characters.Length).Select(rowIndex => (rowIndex, 0))
-            .Concat(Enumerable.Range(1, characters[0].Length - 1).Select(columnIndex => (0, columnIndex))).ToArray();
-        List<string> positiveDiagonalLines = new();
-
-        foreach (var pos in startPos)
-        {
-            var lineChars = new List<char>();
-            var currentX = pos.StartX;
-            var currentY = pos.StartY;
-            do
-            {
-                lineChars.Add(characters[currentY][currentX]);
-                currentX++;
-                currentY++;
-            } while (currentX < characters[0].Length && currentY < characters.Length);
-            positiveDiagonalLines.Add(string.Concat(lineChars));
-        }
-
-        return positiveDiagonalLines;
     }
 }
