@@ -18,8 +18,36 @@ public class Day4
         string[] allLines = [..horizontalLines, ..verticalLines, .. positiveDiagonalLines, ..negativeDiagnonalLines];
         var result = allLines.Select(line => Regex.Matches(line, "XMAS").Count + Regex.Matches(line, "SAMX").Count).Sum();
 
-        //too high
         Assert.That(result, Is.EqualTo(expectedResult));
+    }
+
+    [TestCase("Day4.Test.txt", 9)]
+    [TestCase("Day4.Input.txt", 1875)]
+    public void Part2(string filename, int expectedResult)
+    {
+        char[][] characters = File.ReadAllLines(filename).Select(line => line.ToCharArray()).ToArray();
+        var allCrosses = GetCrosses(characters).ToArray();
+        string[] validLines = ["M.M.A.S.S", "S.M.A.S.M", "M.S.A.M.S", "S.S.A.M.M"];
+        var result = allCrosses.Count(block => validLines.Contains(block));
+
+        Assert.That(result, Is.EqualTo(expectedResult));
+    }
+
+    IEnumerable<string> GetCrosses(char[][] characters)
+    {
+        for (var y = 0; y < characters.Length - 2; y++)
+        {
+            for (var x = 0; x < characters[0].Length - 2; x++)
+            {
+                char[] blockCharacters =
+                [
+                    characters[y][x], '.', characters[y][x + 2],
+                    '.', characters[y + 1][x + 1], '.',
+                    characters[y + 2][x], '.', characters[y + 2][x + 2]
+                ];
+                yield return string.Concat(blockCharacters);
+            }
+        }
     }
 
     static IEnumerable<string> GetDiagnonalLines(char[][] characters, int verticalLineIndex, Func<int, int> diagnonalDirection)
