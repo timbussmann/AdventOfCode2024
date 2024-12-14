@@ -8,7 +8,7 @@ public class Day4
     [TestCase("Day4.Input.txt", 2536)]
     public void Part1(string filename, int expectedResult)
     {
-        char[][] characters = File.ReadAllLines(filename).Select(line => line.ToCharArray()).ToArray();
+        var characters = File.ReadAllLines(filename).Select(line => line.ToCharArray()).ToArray();
 
         var horizontalLines = characters.Select(lineCharacters => string.Concat(lineCharacters));
         var verticalLines = Enumerable.Range(0, characters[0].Length).Select(columnIndex => string.Concat(characters.Select(line => line[columnIndex])));
@@ -25,10 +25,11 @@ public class Day4
     [TestCase("Day4.Input.txt", 1875)]
     public void Part2(string filename, int expectedResult)
     {
-        char[][] characters = File.ReadAllLines(filename).Select(line => line.ToCharArray()).ToArray();
+        var characters = File.ReadAllLines(filename).Select(line => line.ToCharArray()).ToArray();
+        string[] validXmasCombinations = ["MMASS", "SMASM", "MSAMS", "SSAMM"];
+
         var allCrosses = GetCrosses(characters).ToArray();
-        string[] validLines = ["M.M.A.S.S", "S.M.A.S.M", "M.S.A.M.S", "S.S.A.M.M"];
-        var result = allCrosses.Count(block => validLines.Contains(block));
+        var result = allCrosses.Count(block => validXmasCombinations.Contains(block));
 
         Assert.That(result, Is.EqualTo(expectedResult));
     }
@@ -41,9 +42,9 @@ public class Day4
             {
                 char[] blockCharacters =
                 [
-                    characters[y][x], '.', characters[y][x + 2],
-                    '.', characters[y + 1][x + 1], '.',
-                    characters[y + 2][x], '.', characters[y + 2][x + 2]
+                    characters[y][x], characters[y][x + 2],
+                    characters[y + 1][x + 1],
+                    characters[y + 2][x], characters[y + 2][x + 2]
                 ];
                 yield return string.Concat(blockCharacters);
             }
