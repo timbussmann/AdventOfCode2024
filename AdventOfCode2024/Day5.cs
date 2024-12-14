@@ -9,7 +9,7 @@ public class Day5
         var lines = File.ReadAllLines(filename);
         var (rules, updates) = Parse(lines);
 
-        var descentantPagesLookup = rules.ToLookup(r => r.Item1, r => r.Item2);
+        var descendantPagesLookup = rules.ToLookup(r => r.Item1, r => r.Item2);
         var orderedInputs = updates.Where(IsInOrder);
         var result = orderedInputs.Sum(line => int.Parse(line[line.Length/2]));
         
@@ -20,8 +20,8 @@ public class Day5
         {
             for (int i = 0; i < update.Length; i++)
             {
-                var pagesThatMustbeAfterThisPage = descentantPagesLookup[update[i]];
-                if (update[..i].Any(previousPage => pagesThatMustbeAfterThisPage.Contains(previousPage)))
+                var pagesThatMustComeAfterThisPage = descendantPagesLookup[update[i]];
+                if (update[..i].Any(previousPage => pagesThatMustComeAfterThisPage.Contains(previousPage)))
                 {
                     return false;
                 }
