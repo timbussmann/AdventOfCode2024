@@ -7,29 +7,16 @@ public class Day8
     public void Part1(string filename, int expectedResult)
     {
         var lines = File.ReadAllLines(filename);
-        var nodes = ParseNodes(lines);
-        var nodesByFrequency = nodes.ToLookup(n => n.Frequency, n => n.Coordinate);
-
-        HashSet<(int y, int x)> antiNodeLocations = new ();
-        foreach (var node in nodes)
-        {
-            var siblingNodes = nodesByFrequency[node.Frequency].Where(n => n != node.Coordinate);
-            foreach (var sibling in siblingNodes)
-            {
-                var distance = (y: sibling.Y - node.Coordinate.Y, x: sibling.X - node.Coordinate.X);
-                var antiNodeCoords = (y: sibling.Y + distance.y, x: sibling.X + distance.x);
-                if (
-                    antiNodeCoords.y < lines.Length
-                    && antiNodeCoords.y >= 0
-                    && antiNodeCoords.x < lines[0].Length 
-                    && antiNodeCoords.x >= 0)
-                {
-                    antiNodeLocations.Add((antiNodeCoords.y, antiNodeCoords.x));
-                }
-            }
-        }
+        var antiNodes = CalculateAntiNodes(lines, Part1AntiNodes);
         
-        Assert.That(antiNodeLocations.Count, Is.EqualTo(expectedResult));
+        Assert.That(antiNodes.Count, Is.EqualTo(expectedResult));
+        
+        Coordinate[] Part1AntiNodes(Coordinate sibling, Coordinate node, string[] lines)
+        {
+            var distance = new Coordinate(sibling.Y - node.Y, sibling.X - node.X);
+            var antiNode = new Coordinate(sibling.Y + distance.Y, sibling.X + distance.X);
+            return IsWithinMap(antiNode, lines) ? [antiNode] : [];
+        }
     }
 
     [TestCase("Day8.Test.txt", 34)]
@@ -37,41 +24,50 @@ public class Day8
     public void Part2(string filename, int expectedResult)
     {
         var lines = File.ReadAllLines(filename);
-        var nodes = ParseNodes(lines);
-        var nodesByFrequency = nodes.ToLookup(n => n.Frequency, n => n.Coordinate);
+        var antiNodes = CalculateAntiNodes(lines, Part2AntiNodes);
 
-        HashSet<Coordinate> antiNodeLocations = new ();
-        foreach (var node in nodes)
+        Assert.That(antiNodes.Count, Is.EqualTo(expectedResult));
+        
+        List<Coordinate> Part2AntiNodes(Coordinate sibling, Coordinate node, string[] lines)
         {
-            antiNodeLocations.Add(node.Coordinate);
-            var siblingNodes = nodesByFrequency[node.Frequency].Where(n => n != node.Coordinate);
-            foreach (var sibling in siblingNodes)
+            var antiNodeLocations = new List<Coordinate>();
+            var distance = new Coordinate(sibling.Y - node.Y, sibling.X - node.X);
+            var antiNodeCoords = new Coordinate(sibling.Y, sibling.X);
+            do
             {
-                var distance = new Coordinate(sibling.Y - node.Coordinate.Y, sibling.X - node.Coordinate.X);
-                var antiNodeCoords = new Coordinate(sibling.Y, sibling.X);
-                do
-                {
-                    antiNodeCoords = new Coordinate(antiNodeCoords.Y + distance.Y, antiNodeCoords.X + distance.X);
-                } while (antiNodeCoords.Y < lines.Length
-                         && antiNodeCoords.Y >= 0
-                         && antiNodeCoords.X < lines[0].Length 
-                         && antiNodeCoords.X >= 0
-                         && SaveAntiNode(antiNodeCoords));
-            }
-        }
-        
-        Assert.That(antiNodeLocations.Count, Is.EqualTo(expectedResult));
-        
-        bool SaveAntiNode(Coordinate coordinate)
-        {
-            antiNodeLocations.Add(coordinate);
-            return true;
+                antiNodeLocations.Add(antiNodeCoords);
+                antiNodeCoords = new Coordinate(antiNodeCoords.Y + distance.Y, antiNodeCoords.X + distance.X);
+            } while (IsWithinMap(antiNodeCoords, lines));
+
+            return antiNodeLocations;
         }
     }
 
-    private static List<Node> ParseNodes(string[] lines)
+    private static IEnumerable<Coordinate> CalculateAntiNodes(string[] lines,
+        Func<Coordinate, Coordinate, string[], IEnumerable<Coordinate>> antiNodesFunction)
     {
-        List<Node> nodes = new();
+        var nodes = ParseNodes(lines);
+        var nodesByFrequency = nodes.ToLookup(n => n.Value, n => n.Key);
+
+        var antiNodes = nodes.SelectMany(node =>
+        {
+            var siblingNodes = nodesByFrequency[node.Value]
+                .Where(n => n != node.Key);
+            return siblingNodes.SelectMany(sibling => antiNodesFunction(sibling, node.Key, lines));
+        });
+        
+        return antiNodes.ToHashSet();
+    }
+
+    private static bool IsWithinMap(Coordinate coordinate, string[] map) =>
+        coordinate.Y < map.Length
+        && coordinate.Y >= 0
+        && coordinate.X < map[0].Length
+        && coordinate.X >= 0;
+
+    private static Dictionary<Coordinate, char> ParseNodes(string[] lines)
+    {
+        Dictionary<Coordinate, char> nodes = new();
         for (int y = 0; y < lines.Length; y++)
         {
             for (int x = 0; x < lines[0].Length; x++)
@@ -79,7 +75,7 @@ public class Day8
                 var value = lines[y][x];
                 if (char.IsAsciiLetterOrDigit(value))
                 {
-                    nodes.Add(new Node(value, new Coordinate(y, x)));
+                    nodes.Add(new Coordinate(y, x), value);
                 }
             }
         }
@@ -87,7 +83,5 @@ public class Day8
         return nodes;
     }
 
-    record Node(char Frequency, Coordinate Coordinate);
-
-    record Coordinate(int Y, int X);
+    readonly record struct Coordinate(int Y, int X);
 }
