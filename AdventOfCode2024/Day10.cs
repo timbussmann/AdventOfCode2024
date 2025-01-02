@@ -20,7 +20,34 @@ public class Day10
         var trailEnds = map.Where(pair => pair.Value == 9).Select(pair => pair.Key);
 
 
-        Dictionary<(int, int), HashSet<(int, int)>> trails = new();
+        Dictionary<(int, int), List<(int, int)>> trails = new();
+        foreach (var trailEnd in trailEnds)
+        {
+            GetNumberOfTrails(trailEnd, trailEnd, map, trails);
+        }
+
+        Assert.That(trails.Select(kvp => kvp.Value.Distinct().Count()).Sum(), Is.EqualTo(expectedResult));
+    }
+    
+    [TestCase("Day10.Test.txt", 81)]
+    [TestCase("Day10.Input.txt", 1120)]
+    public void Part2(string filename, int expectedResult)
+    {
+        var input = File.ReadAllLines(filename);
+        
+        Dictionary<(int, int), int> map = new();
+        for (var y = 0; y < input.Length; y++)
+        {
+            for (var x = 0; x < input[y].Length; x++)
+            {
+                map.Add((y, x), int.Parse(input[y][x].ToString()));
+            }
+        }
+
+        var trailEnds = map.Where(pair => pair.Value == 9).Select(pair => pair.Key);
+
+
+        Dictionary<(int, int), List<(int, int)>> trails = new();
         foreach (var trailEnd in trailEnds)
         {
             GetNumberOfTrails(trailEnd, trailEnd, map, trails);
@@ -31,7 +58,7 @@ public class Day10
 
     static readonly (int, int)[] Directions = [(1, 0), (0, -1), (-1, 0), (0, 1)];
 
-    void GetNumberOfTrails((int y, int x) currentPosition, (int y, int x) trailEnd, Dictionary<(int, int), int> mapDic, Dictionary<(int, int), HashSet<(int, int)>> trails)
+    void GetNumberOfTrails((int y, int x) currentPosition, (int y, int x) trailEnd, Dictionary<(int, int), int> mapDic, Dictionary<(int, int), List<(int, int)>> trails)
     {
         var expectedNextHeight = mapDic[currentPosition] - 1;
         foreach ((int dy, int dx) direction in Directions)
@@ -41,7 +68,7 @@ public class Day10
             {
                 if (height == 0)
                 {
-                    var trailsEnds = trails.GetValueOrDefault(newPos, new HashSet<(int, int)>());
+                    var trailsEnds = trails.GetValueOrDefault(newPos, new List<(int, int)>());
                     trailsEnds.Add(trailEnd);
                     trails[newPos] = trailsEnds;
                 }
