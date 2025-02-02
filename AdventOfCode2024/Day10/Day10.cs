@@ -26,7 +26,7 @@ public class Day10
 
     static Dictionary<(int, int), int> ParseMap(string filename)
     {
-        var input = File.ReadAllLines(filename);
+        var input = File.ReadAllLines(Input.GetFilePath(filename));
         
         Dictionary<(int, int), int> map = new();
         for (var y = 0; y < input.Length; y++)

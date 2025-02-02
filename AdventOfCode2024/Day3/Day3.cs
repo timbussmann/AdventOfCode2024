@@ -8,7 +8,7 @@ public partial class Day3
     [TestCase("Day3.Input.txt", 162813399)]
     public void Part1(string filename, int expectedResult)
     {
-        var input = File.ReadAllText(filename);
+        var input = File.ReadAllText(Input.GetFilePath(filename));
         
         var instructions = MultiplyInstructionRegex().Matches(input);
         var result = instructions
@@ -22,7 +22,7 @@ public partial class Day3
     [TestCase("Day3.Input.txt", 53783319)]
     public void Part2(string filename, long expectedResult)
     {
-        var input = File.ReadAllText(filename);
+        var input = File.ReadAllText(Input.GetFilePath(filename));
 
         var activeInputBlockMatches = ActiveInstructionsBlocksRegex().Matches("do()" + input + "don't()");
         var instructionMatches = activeInputBlockMatches.SelectMany(match => MultiplyInstructionRegex().Matches(match.Value));

@@ -8,7 +8,7 @@ public class Day4
     [TestCase("Day4.Input.txt", 2536)]
     public void Part1(string filename, int expectedResult)
     {
-        var characters = File.ReadAllLines(filename).Select(line => line.ToCharArray()).ToArray();
+        var characters = File.ReadAllLines(Input.GetFilePath(filename)).Select(line => line.ToCharArray()).ToArray();
 
         var horizontalLines = characters.Select(lineCharacters => string.Concat(lineCharacters));
         var verticalLines = Enumerable.Range(0, characters[0].Length).Select(columnIndex => string.Concat(characters.Select(line => line[columnIndex])));
@@ -25,7 +25,7 @@ public class Day4
     [TestCase("Day4.Input.txt", 1875)]
     public void Part2(string filename, int expectedResult)
     {
-        var characters = File.ReadAllLines(filename).Select(line => line.ToCharArray()).ToArray();
+        var characters = File.ReadAllLines(Input.GetFilePath(filename)).Select(line => line.ToCharArray()).ToArray();
         string[] validXmasCombinations = ["MMASS", "SMASM", "MSAMS", "SSAMM"];
 
         var allCrosses = GetCrosses(characters).ToArray();

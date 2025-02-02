@@ -6,7 +6,7 @@ public class Day6
     [TestCase("Day6.Input.txt", 5534)]
     public void Part1(string filename, int expected)
     {
-        char[][] map = File.ReadAllLines(filename).Select(line => line.ToCharArray()).ToArray();
+        char[][] map = File.ReadAllLines(Input.GetFilePath(filename)).Select(line => line.ToCharArray()).ToArray();
         
         var guardPosition = FindGuardPosition(map);
         var rowLength = map[0].Length;

@@ -6,7 +6,7 @@ public class Day5
     [TestCase("Day5.Input.txt",  5948)]
     public void Part1(string filename, int expectedResult)
     {
-        var lines = File.ReadAllLines(filename);
+        var lines = File.ReadAllLines(Input.GetFilePath(filename));
         var (rules, updates) = Parse(lines);
 
         var descendantPagesLookup = rules.ToLookup(r => r.Item1, r => r.Item2);
@@ -35,7 +35,7 @@ public class Day5
     [TestCase("Day5.Input.txt",  3062)]
     public void Part2(string filename, int expectedResult)
     {
-        var lines = File.ReadAllLines(filename);
+        var lines = File.ReadAllLines(Input.GetFilePath(filename));
         var (rules, updates) = Parse(lines);
         
         var comparer = Comparer<string>.Create((s1, s2) => rules.Contains((s1, s2)) ? -1 : 1);

@@ -6,7 +6,7 @@ public class Day9
     [TestCase("Day9.Input.txt", 6385338159127)]
     public void Part1(string filename, long expectedResult)
     {
-        var input = File.ReadAllText(filename);
+        var input = File.ReadAllText(Input.GetFilePath(filename));
         if (input.Length % 2 != 0)
         {
             input += "0";
@@ -49,7 +49,7 @@ public class Day9
     [TestCase("Day9.Input.txt", 6415163624282)]
     public void Part2(string filename, long expectedResult)
     {
-        var diskSegments = ParseDiskSegments(filename);
+        var diskSegments = ParseDiskSegments(Input.GetFilePath(filename));
 
         var currentBlock = diskSegments.Last!;
         while (currentBlock != null)

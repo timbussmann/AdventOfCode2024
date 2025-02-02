@@ -6,7 +6,7 @@ public class Day8
     [TestCase("Day8.Input.txt", 409)]
     public void Part1(string filename, int expectedResult)
     {
-        var lines = File.ReadAllLines(filename);
+        var lines = File.ReadAllLines(Input.GetFilePath(filename));
         var antiNodes = CalculateAntiNodes(lines, Part1AntiNodes);
         
         Assert.That(antiNodes.Count, Is.EqualTo(expectedResult));
@@ -23,7 +23,7 @@ public class Day8
     [TestCase("Day8.Input.txt", 1308)]
     public void Part2(string filename, int expectedResult)
     {
-        var lines = File.ReadAllLines(filename);
+        var lines = File.ReadAllLines(Input.GetFilePath(filename));
         var antiNodes = CalculateAntiNodes(lines, Part2AntiNodes);
 
         Assert.That(antiNodes.Count, Is.EqualTo(expectedResult));

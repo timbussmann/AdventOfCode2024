@@ -5,7 +5,7 @@ public class Day1
     [Test]
     public void Part1()
     {
-        var allLines = File.ReadAllLines("Day1.Input.txt");
+        var allLines = File.ReadAllLines(Input.GetFilePath("Day1.Input.txt"));
         var (leftColumn, rightColumn) = GetColumns(allLines);
         var diff = Enumerable.Zip(leftColumn.Order(), rightColumn.Order())
             .Select(pair => Math.Abs(pair.First - pair.Second))
@@ -17,7 +17,7 @@ public class Day1
     [Test]
     public void Part2()
     {
-        var allLines = File.ReadAllLines("Day1.Input.txt");
+        var allLines = File.ReadAllLines(Input.GetFilePath("Day1.Input.txt"));
         var (leftColumn, rightColumn) = GetColumns(allLines);
         
         var lookup = rightColumn.ToLookup(x => x);
@@ -31,7 +31,7 @@ public class Day1
     [Test]
     public void Part2_CountBy()
     {
-        var allLines = File.ReadAllLines("Day1.Input.txt");
+        var allLines = File.ReadAllLines(Input.GetFilePath("Day1.Input.txt"));
         var (leftColum, rightColumn) = GetColumns(allLines);
         
         // new shiny CountBy method in .NET 9

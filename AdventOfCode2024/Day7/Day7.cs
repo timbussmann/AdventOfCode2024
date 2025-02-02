@@ -6,7 +6,7 @@ public class Day7
     [TestCase("Day7.Input.txt", 5702958180383)]
     public void Part1(string filename, long expectedResult)
     {
-        var lines = File.ReadAllLines(filename);
+        var lines = File.ReadAllLines(Input.GetFilePath(filename));
         var equations = Parse(lines);
 
         Func<long, long, long>[] operations = [
@@ -27,7 +27,7 @@ public class Day7
     [TestCase("Day7.Input.txt", 92612386119138)]
     public void Part2(string filename, long expectedResult)
     {
-        var lines = File.ReadAllLines(filename);
+        var lines = File.ReadAllLines(Input.GetFilePath(filename));
         var equations = Parse(lines);
 
         Func<long, long, long>[] operations = [

@@ -6,7 +6,7 @@ public class Day2
     [TestCase("Day2.Input.txt", 224)]
     public void Part1(string filename, int expectedResult)
     {
-        var reportLines = File.ReadAllLines(filename);
+        var reportLines = File.ReadAllLines(Input.GetFilePath(filename));
         var reports = ParseReports(reportLines);
 
         int validReports = reports.Count(IsValidReport);
@@ -18,7 +18,7 @@ public class Day2
     [TestCase("Day2.Input.txt", 293)]
     public void Part2(string filename, int expectedResult)
     {
-        var reportLines = File.ReadAllLines(filename);
+        var reportLines = File.ReadAllLines(Input.GetFilePath(filename));
         var reports = ParseReports(reportLines);
         var dampenedReportGroups = reports.Select(report => report.Select((_, i) =>
         {
