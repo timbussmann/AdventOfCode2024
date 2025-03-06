@@ -2,9 +2,7 @@
 
 namespace AdventOfCode2024.Day14;
 
-using Pos = (int y, int x);
-
-public class Day14
+public partial class Day14
 {
     [TestCase("Day14.Test.txt", 11, 7, 12)]
     [TestCase("Day14.Input.txt", 101, 103, 222062148)]
@@ -32,23 +30,14 @@ public class Day14
         Assert.That(safetyFactor, Is.EqualTo(expectedResult));
     }
 
-    private static List<Robot> ParseRobots(string filename)
-    {
-        var lines = File.ReadAllLines(Input.GetFilePath(filename));
-        var regex = new Regex(@"-?\d+");
-        var robots = new List<Robot>();
-        foreach (var line in lines)
-        {
-            var matches = regex.Matches(line);
-            robots.Add(new Robot
+    private static List<Robot> ParseRobots(string filename) =>
+        File.ReadAllLines(Input.GetFilePath(filename))
+            .Select(line => Regex().Matches(line))
+            .Select(matches => new Robot
             {
-                Position = (int.Parse(matches[1].Value), int.Parse(matches[0].Value)),
+                Position = (int.Parse(matches[1].Value), int.Parse(matches[0].Value)), 
                 Velocity = (int.Parse(matches[3].Value), int.Parse(matches[2].Value))
-            });
-        }
-
-        return robots;
-    }
+            }).ToList();
 
     private class Robot
     {
@@ -57,10 +46,11 @@ public class Day14
         
         public void Move(int gridWidth, int gridHeight)
         {
-            Pos newPos = (Position.y + Velocity.yd, Position.x + Velocity.xd);
-            Position = (WrapAround(newPos.y, gridHeight), WrapAround(newPos.x, gridWidth));
-
-            int WrapAround(int value, int max) => value < 0 ? max + value : value % max;
+            // always add the grid width/height to handle negative values
+            Position = ((Position.y + Velocity.yd + gridHeight) % gridHeight, (Position.x + Velocity.xd + gridWidth) % gridWidth);
         }
     }
+
+    [GeneratedRegex(@"-?\d+")]
+    private static partial Regex Regex();
 }
