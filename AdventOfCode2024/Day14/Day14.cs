@@ -10,26 +10,11 @@ public class Day14
     [TestCase("Day14.Input.txt", 101, 103, 222062148)]
     public void Part1(string filename, int width, int height, long expectedResult)
     {
-        var lines = File.ReadAllLines(Input.GetFilePath(filename));
-        var regex = new Regex(@"-?\d+");
-        List<Robot> robots = new List<Robot>();
-        foreach (var line in lines)
-        {
-            var matches = regex.Matches(line);
-            robots.Add(new Robot
-            {
-                Position = (int.Parse(matches[1].Value), int.Parse(matches[0].Value)),
-                Velocity = (int.Parse(matches[3].Value), int.Parse(matches[2].Value))
-            });
-        }
+        var robots = ParseRobots(filename);
 
         for (var i = 0; i < 100; i++)
-            foreach (var robot in robots)
-            {
-                Pos newPos = (robot.Position.y + robot.Velocity.yd, robot.Position.x + robot.Velocity.xd);
-                newPos = (WrapAround(newPos.y, height), WrapAround(newPos.x, width));
-                robot.Position = newPos;
-            }
+            foreach (var robot in robots) 
+                robot.Move(width, height);
 
         long[][] quadrants = [[0, 0], [0, 0]];
         var widthMiddleIndex = (width - 1) / 2;
@@ -45,16 +30,37 @@ public class Day14
 
         var safetyFactor = quadrants.SelectMany(q => q).Aggregate(1L, (i, l) => i * l);
         Assert.That(safetyFactor, Is.EqualTo(expectedResult));
+    }
 
-        int WrapAround(int value, int max)
+    private static List<Robot> ParseRobots(string filename)
+    {
+        var lines = File.ReadAllLines(Input.GetFilePath(filename));
+        var regex = new Regex(@"-?\d+");
+        var robots = new List<Robot>();
+        foreach (var line in lines)
         {
-            return value < 0 ? max + value : value % max;
+            var matches = regex.Matches(line);
+            robots.Add(new Robot
+            {
+                Position = (int.Parse(matches[1].Value), int.Parse(matches[0].Value)),
+                Velocity = (int.Parse(matches[3].Value), int.Parse(matches[2].Value))
+            });
         }
+
+        return robots;
     }
 
     private class Robot
     {
         public (int y, int x) Position { get; set; }
-        public (int yd, int xd) Velocity { get; set; }
+        public (int yd, int xd) Velocity { get; init; }
+        
+        public void Move(int gridWidth, int gridHeight)
+        {
+            Pos newPos = (Position.y + Velocity.yd, Position.x + Velocity.xd);
+            Position = (WrapAround(newPos.y, gridHeight), WrapAround(newPos.x, gridWidth));
+
+            int WrapAround(int value, int max) => value < 0 ? max + value : value % max;
+        }
     }
 }
