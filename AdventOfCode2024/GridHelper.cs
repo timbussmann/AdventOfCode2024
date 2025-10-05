@@ -2,7 +2,11 @@ using System.Text;
 
 namespace AdventOfCode2024;
 
-public record struct Coordinate(int Y, int X);
+public record struct Coordinate(int Y, int X)
+{
+    public static Coordinate operator +(Coordinate a, Coordinate b)
+        => new Coordinate(a.Y + b.Y, a.X + b.X);
+}
 
 
 public static class GridHelper
@@ -16,9 +20,11 @@ public static class GridHelper
         {
             for (var x = 0; x <= xMax; x++)
             {
-                sb.Append(grid.GetValueOrDefault(new Coordinate(y, x), default)?.ToString() ?? " ");
+                var gridValue = grid.GetValueOrDefault(new Coordinate(y, x), default);
+                var value = gridValue?.ToString() ?? " ";
+                sb.Append(value);
             }
-
+            
             sb.AppendLine();
         }
 
