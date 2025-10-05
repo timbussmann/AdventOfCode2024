@@ -31,6 +31,7 @@ public partial class Day14
         Assert.That(safetyFactor, Is.EqualTo(expectedResult));
     }
 
+    [Explicit]
     [TestCase("Day14.Input.txt", 101, 103, 6000, 8000)]
     public void Part2(string filename, int width, int height, int renderStartRange, int renderEndRange)
     {

@@ -1,8 +1,4 @@
-﻿using System.Text;
-
-using Coordinate = (int y, int x);
-
-namespace AdventOfCode2024.Day15;
+﻿namespace AdventOfCode2024.Day15;
 
 public class Day15
 {
@@ -19,33 +15,33 @@ public class Day15
             var robotPosition = grid.First(kvp => kvp.Value == '@').Key;
             var direction = instruction switch
             {
-                '<' => (0, -1),
-                '^' => (-1, 0),
-                '>' => (0, 1),
-                'v' => (1, 0),
+                '<' => new Coordinate(0, -1),
+                '^' => new Coordinate(-1, 0),
+                '>' => new Coordinate(0, 1),
+                'v' => new Coordinate(1, 0),
             };
             
             TryRecursiveShift(grid, robotPosition, direction);
         }
-        
-        RenderGrid(grid);
+
+        GridHelper.RenderGrid(grid);
 
         var boxCoordinateSum = grid
             .Where(kvp => kvp.Value == 'O')
-            .Select(kvp => kvp.Key.y * 100 + kvp.Key.x)
+            .Select(kvp => kvp.Key.Y * 100 + kvp.Key.X)
             .Sum();
         Assert.That(boxCoordinateSum, Is.EqualTo(expectedResult));
     }
 
-    private static Dictionary<(int y, int x), char> BuildGrid(string[] input)
+    private static Dictionary<Coordinate, char> BuildGrid(string[] input)
     {
         var gridLines = input.TakeWhile(l => l != string.Empty).ToArray();
-        var grid = new Dictionary<(int y, int x), char>();
+        var grid = new Dictionary<Coordinate, char>();
         for (int y = 0; y < gridLines.Length; y++)
         {
             for (int x = 0; x < gridLines[0].Length; x++)
             {
-                grid.Add((y, x), gridLines[y][x]);                
+                grid.Add(new Coordinate(y, x), gridLines[y][x]);                
             }
         }
 
@@ -63,7 +59,7 @@ public class Day15
                 return true;
         }
 
-        var nextPosition = (currentPosition.y + direction.y, currentPosition.x + direction.x);
+        var nextPosition = new Coordinate(currentPosition.Y + direction.Y, currentPosition.X + direction.X);
         if (TryRecursiveShift(grid, nextPosition, direction))
         {
             grid[nextPosition] = currentElement;
@@ -72,23 +68,5 @@ public class Day15
         }
 
         return false;
-    }
-
-    private void RenderGrid<T>(Dictionary<Coordinate, T?> grid)
-    {
-        var yMax = grid.Keys.Max(k => k.y);
-        var xMax = grid.Keys.Max(k => k.x);
-        StringBuilder sb = new();
-        for (var y = 0; y <= yMax; y++)
-        {
-            for (var x = 0; x <= xMax; x++)
-            {
-                sb.Append(grid.GetValueOrDefault((y, x), default)?.ToString() ?? " ");
-            }
-
-            sb.AppendLine();
-        }
-
-        Console.WriteLine(sb.ToString());
     }
 }
